@@ -1,27 +1,21 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <title>Math expression generator</title>
-        <style>
-            input {
-                width: 2em;
-                border: none;
-                border-bottom: 1px solid grey;
-            }
-            textarea {
-                display: block;
-            }
-        </style>
-    </head>
-    <body>
-        <textarea id = 'res' rows = '20' cols = '40'></textarea>
 
-        Max branching: <input id = 'branch' value = '3' type = 'number'></input>
-        Max depth: <input id = 'depth' value = '2' type = 'number'></input>
-        <button id = 'run'>run</button>
+<head>
+    <meta charset="utf-8">
+    <title>Math expression generator</title>
+    <link rel="stylesheet" href="index.css" media="screen" >
+</head>
 
-        <script src = 'expr-generator.js'></script>
-        <script src = 'index.js'></script>
-    </body>
+<body>
+    <textarea id = 'res' rows = '20' cols = '40'></textarea>
+
+    Max branching: <input id = 'branch' value = '3' type = 'number'></input>
+    Max depth: <input id = 'depth' value = '2' type = 'number'></input>
+    <button id = 'run'>run</button>
+
+    <script src = 'expr-generator.js'></script>
+    <script src = 'index.js'></script>
+</body>
+
 </html>

@@ -3,30 +3,50 @@ var gen = (function() {
         return Math.floor(max * Math.random());
     };
 
+    var addParens = function(str) {
+        return '(' + str + ')';
+    };
+
 
     var config = {
         ops: ['+', '-', '*'],
         branch: 2,
         depth: 3,
-        range: [0, 10]
+        range: [0, 10],
+        priorities: {
+            '+': 2,
+            '-': 2,
+            '*': 1,
+            '/': 1
+        }
     };
 
     var rgen = function(depth) {
         if (depth == 0)
-            return randi(16);
+            return {expr: randi(16), priority: 1};
+
         var branch = 2 + randi(config.branch - 2);
-        var expr = '(';
+        var expr = '';
+        var priority = 10;
+        var adjacentPriorities = [10, 10];
         for (var i = 0; i < branch; i++) {
-            expr += rgen(randi(depth));
-            if (i !== branch - 1)
-                expr += config.ops[randi(config.ops.length)];
+            var chunk = rgen(randi(depth));
+            adjacentPriorities[0] = adjacentPriorities[1];
+            var nextOp = i == branch - 1?
+                '':
+                config.ops[randi(config.ops.length)];
+            adjacentPriorities[1] = config.priorities[nextOp] || 10;
+            var priority = Math.min(priority, adjacentPriorities[1]);
+            if (chunk.priority > Math.min.apply(null, adjacentPriorities))
+                chunk.expr = addParens(chunk.expr);
+            expr += chunk.expr + nextOp;
         }
-        expr += ')';
-        return expr;
+        
+        return {expr: expr, priority: priority};
     };
 
     var gen = function() {
-        return rgen(config.depth);
+        return rgen(config.depth).expr;
     };
 
     Object.keys(config).forEach(function(key) {
@@ -40,5 +60,5 @@ var gen = (function() {
     return gen;
 }());
 
-if (module != null && module.exports)
+if (typeof module !== 'undefined' && module.exports)
     module.exports = gen;

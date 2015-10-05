@@ -1,5 +1,3 @@
-var fs = require('fs');
-
 var gen = (function() {
     var randi = function(max) {
         return Math.floor(max * Math.random());
@@ -39,14 +37,8 @@ var gen = (function() {
     });
 
 
-
     return gen;
 }());
 
-gen.branch(4).depth(3);
-var eqns = '';
-for (var i = 0; i < 100; i++) {
-    var rande = gen();
-    eqns += rande + ' = ' + eval(rande) + '\n';
-}
-fs.writeFileSync(__dirname + '\\problems.txt', eqns);
+if (this.module)
+    this.module.exports = gen;

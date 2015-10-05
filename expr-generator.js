@@ -10,7 +10,6 @@ var gen = (function() {
 
     var config = {
         ops: ['+', '-', '*'],
-        branch: 2,
         depth: 3,
         range: [0, 10],
         priorities: {
@@ -21,32 +20,36 @@ var gen = (function() {
         }
     };
 
+    var toString = function() {
+        var selfPriority = this.priority;
+        return this.children.map(function(sub) {
+            return sub.priority > selfPriority? addParens(sub): sub;
+        }).join(this.op);
+    };
+
     var rgen = function(depth) {
         if (depth == 0)
-            return {expr: randi(16), priority: 1};
+            return {
+                children: [randi(16)],
+                toString: toString,
+                op: '',
+                priority: 1
+            };
 
-        var branch = 2 + randi(config.branch - 2);
-        var expr = '';
-        var priority = 10;
-        var adjacentPriorities = [10, 10];
-        for (var i = 0; i < branch; i++) {
-            var chunk = rgen(randi(depth));
-            adjacentPriorities[0] = adjacentPriorities[1];
-            var nextOp = i == branch - 1?
-                '':
-                config.ops[randi(config.ops.length)];
-            adjacentPriorities[1] = config.priorities[nextOp] || 10;
-            var priority = Math.min(priority, adjacentPriorities[1]);
-            if (chunk.priority > Math.min.apply(null, adjacentPriorities))
-                chunk.expr = addParens(chunk.expr);
-            expr += chunk.expr + nextOp;
-        }
-        
-        return {expr: expr, priority: priority};
+        var op = config.ops[randi(config.ops.length)];
+        var selfPriority = config.priorities[op];
+        var children = [rgen(randi(depth)), rgen(randi(depth))];
+
+        return {
+            children: children,
+            op: op,
+            priority: selfPriority,
+            toString: toString
+        };
     };
 
     var gen = function() {
-        return rgen(config.depth).expr;
+        return rgen(config.depth);
     };
 
     Object.keys(config).forEach(function(key) {

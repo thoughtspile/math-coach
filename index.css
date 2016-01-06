@@ -1,9 +1,11 @@
-input {
-    width: 2em;
-    border: none;
-    border-bottom: 1px solid grey;
+body, .container.page {
+  height: 100%;
 }
 
-textarea {
-    display: block;
+.container.page {
+    padding-top: 60px;
+}
+
+.result {
+  height: 100%;
 }

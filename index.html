@@ -4,22 +4,49 @@
 <head>
     <meta charset="utf-8">
     <title>Math expression generator</title>
+
     <link rel="stylesheet" href="index.css" media="screen" >
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" media="screen" >
 </head>
 
 <body>
-    <textarea id = 'res' rows = '20' cols = '40'></textarea>
+  <div class='container page'>
+    <div class='row'>
+      <form class='form-horizontal col-xs-6' action="javascript:void(0);">
+        <div class='form-group row'>
+          <label class='col-xs-4 control-label' for='depth'>Max depth</label>
+          <div class='col-xs-8'>
+            <input class='form-control' id='depth' value='2' type='number' min='0'>
+            </input>
+          </div>
+        </div>
 
-    Max depth: <input id = 'depth' value = '2' type = 'number'></input>
-    Mode:
-    <select id = 'mode'>
-        <option value = 'expr' selected>Expression</option>
-        <option value = 'eqn'>Equation</option>
-    </select>
-    <button id = 'run'>run</button>
+        <div class='form-group row'>
+          <label class='col-xs-4 control-label' for='mode'>Mode</label>
+          <div class='col-xs-8'>
+            <select class='form-control' id='mode'>
+                <option value='expr' selected>Expression</option>
+                <option value='eqn'>Equation</option>
+            </select>
+          </div>
+        </div>
 
-    <script src = 'expr-generator.js'></script>
-    <script src = 'index.js'></script>
+        <div class='form-group row'>
+          <div class='col-xs-offset-4 col-xs-8'>
+            <button type='submit' class='btn btn-secondary' id='run'>run</button>
+          </div>
+        </div>
+      </form>
+
+      <div class='col-xs-6'>
+        <textarea class='result form-control' id='res' rows = '20' cols = '40'>
+        </textarea>
+      </div>
+    </div>
+  </div>
+
+  <script src = 'expr-generator.js'></script>
+  <script src = 'index.js'></script>
 </body>
 
 </html>

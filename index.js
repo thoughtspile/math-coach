@@ -7,17 +7,18 @@
     var getStr = function(mode) {
         if (mode == 'expr') {
             var rande = gen();
-            return rande + ' = ' + rande.value();
+            return rande + ' | ' + rande.value();
         }
         var rande = gen.eqn();
-        return rande.eqn + ' | x = ' + rande.ans;
+        return rande.eqn + ' | ' + rande.ans;
     };
 
     var run = function() {
         gen.depth(depth.value);
-        res.innerHTML = '';
+        var lines = [];
         for (var i = 0; i < 30; i++)
-            res.innerHTML += getStr(mode.value) + '\n';
+            lines.push(getStr(mode.value));
+        res.innerHTML = lines.join('\n');
     };
 
     runBtn.onclick = run;

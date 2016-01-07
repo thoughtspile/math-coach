@@ -36,7 +36,6 @@
         var max = Math.sqrt(val);
         for (var i = 2; i <= max; i++) {
           if (isPrime(i)) {
-          console.log(val, i)
             while (divides(i, val)) {
               res.push(i);
               val = Math.round(val / i);
@@ -120,25 +119,31 @@
             depth = config.depth;
 
         if (depth == 0)
-            return AST(randi(16), '');
+            return AST(val, '');
+
         var op = config.ops[randi(config.ops.length)];
         var left = null;
         var right = null;
         if (op !== '*') {
-            left = gen(0);
-            right = eval(val + config.inverse[op] + left);
+            right = randi(16);
         } else {
             if (isPrime(val))
                 return gen.to(val, depth);
-            left = rSubset(factorize(val)).reduce(function(acc, val) {
+            right = rSubset(factorize(val)).reduce(function(acc, val) {
               return acc * val;
             }, 1);
-            right = Math.floor(val / left);
         }
-        if (Math.abs(left) > 500 || Math.abs(right) > 500)
+
+        left = eval(val + config.inverse[op] + right);
+
+        if (Math.abs(left) > 500 || Math.abs(right) > 500 || eval(left + op + right) !== val)
             return gen.to(val, depth);
-        children = [gen.to(left, randi(depth)), gen.to(right, randi(depth))];
-        return AST(children, op);
+
+        var children = [gen.to(left, randi(depth)), gen.to(right, randi(depth))];
+        var res = AST(children, op);
+        if(res.value() !== val)
+            console.log(res, left, op, right)
+        return res;
     };
 
     gen.eqn = function() {

@@ -91,8 +91,8 @@
                 win();
         } else {
             flashValidity('invalid');
-            lesson.lives--;
-            if (lesson.lives < 0)
+            lesson.hearts--;
+            if (lesson.hearts < 0)
                 fail();
         }
     }

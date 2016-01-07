@@ -90,7 +90,7 @@
     AST.prototype.toString = function() {
         var selfPriority = this.priority;
         return this.children.map(function(sub) {
-            return sub.priority > selfPriority? addParens(sub): sub;
+            return sub.priority >= selfPriority? addParens(sub): sub;
         }).join(this.op);
     };
 

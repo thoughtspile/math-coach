@@ -12,18 +12,18 @@
 <body>
   <div class='container page'>
     <div class='row'>
-      <form class='form-horizontal col-xs-6' action="javascript:void(0);">
+      <form class='form-horizontal col-sm-6' action="javascript:void(0);">
         <div class='form-group row'>
-          <label class='col-xs-4 control-label' for='depth'>Max depth</label>
-          <div class='col-xs-8'>
+          <label class='col-sm-4 control-label' for='depth'>Max depth</label>
+          <div class='col-sm-8'>
             <input class='form-control' id='depth' value='2' type='number' min='0'>
             </input>
           </div>
         </div>
 
         <div class='form-group row'>
-          <label class='col-xs-4 control-label' for='mode'>Mode</label>
-          <div class='col-xs-8'>
+          <label class='col-sm-4 control-label' for='mode'>Mode</label>
+          <div class='col-sm-8'>
             <select class='form-control' id='mode'>
                 <option value='expr' selected>Expression</option>
                 <option value='eqn'>Equation</option>
@@ -32,13 +32,13 @@
         </div>
 
         <div class='form-group row'>
-          <div class='col-xs-offset-4 col-xs-8'>
+          <div class='col-sm-offset-4 col-sm-8'>
             <button type='submit' class='btn btn-secondary' id='run'>run</button>
           </div>
         </div>
       </form>
 
-      <div class='col-xs-6'>
+      <div class='col-sm-6'>
         <textarea class='result form-control' id='res' rows = '30'>
         </textarea>
       </div>

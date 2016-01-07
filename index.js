@@ -6,7 +6,7 @@
 
     var getStr = function(mode) {
         if (mode == 'expr') {
-            var rande = gen.to();
+            var rande = gen();
             return rande + ' | ' + rande.value();
         }
         var rande = gen.eqn();
@@ -14,11 +14,11 @@
     };
 
     var run = function() {
-        gen.depth(depth.value);
-        var lines = [];
-        for (var i = 0; i < 30; i++)
-            lines.push(getStr(mode.value));
-        res.innerHTML = lines.join('\n');
+        gen.depth(depth.value)
+            .range([-200, 200]);
+        res.innerHTML = _.range(30)
+            .map(getStr.bind(null, mode.value))
+            .join('\n');
     };
 
     runBtn.onclick = run;

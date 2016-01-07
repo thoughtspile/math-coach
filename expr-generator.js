@@ -26,8 +26,6 @@
     };
 
     // returns the array of prime factors of val (in ascending order)
-    // at each iteration adds the smallest factor not less than restr
-    // works for negative numbers
     var factorize = function(val) {
         if (val < 0) {
             return [-1].concat(factorize(-val));
@@ -76,6 +74,9 @@
         }
     };
 
+    var isValid = function(val) {
+        return (config.range[0] <= val && val <= config.range[1])
+    }
 
     // AST constructor, accepts array of children and operation
     var AST = function(children, op) {
@@ -100,19 +101,8 @@
     };
 
 
-    // recursively generate a random AST with height <= depth
-    var gen = function(depth) {
-        if (typeof depth == 'undefined')
-            depth = config.depth;
-        if (depth == 0)
-            return AST(randi(16), '');
-        return AST(
-            [gen(randi(depth)), gen(randi(depth))],
-            config.ops[randi(config.ops.length)]);
-    };
-
-    // generate a random AST with value val
-    gen.to = function(val, depth) {
+    // recursively generate a random AST with value val
+    var gen = function(val, depth) {
         if (typeof val == 'undefined')
             val = randi(16);
         if (typeof depth == 'undefined')
@@ -128,7 +118,7 @@
             right = randi(16);
         } else {
             if (isPrime(val))
-                return gen.to(val, depth);
+                return gen(val, depth);
             right = rSubset(factorize(val)).reduce(function(acc, val) {
               return acc * val;
             }, 1);
@@ -136,10 +126,11 @@
 
         left = eval(val + config.inverse[op] + right);
 
-        if (Math.abs(left) > 500 || Math.abs(right) > 500 || eval(left + op + right) !== val)
-            return gen.to(val, depth);
+        // an ugly fix for / 0
+        if (!isValid(left) || !isValid(right) || eval(left + op + right) !== val)
+            return gen(val, depth);
 
-        var children = [gen.to(left, randi(depth)), gen.to(right, randi(depth))];
+        var children = [gen(left, randi(depth)), gen(right, randi(depth))];
         var res = AST(children, op);
         if(res.value() !== val)
             console.log(res, left, op, right)

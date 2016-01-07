@@ -78,6 +78,13 @@
         return (config.range[0] <= val && val <= config.range[1])
     }
 
+    var getValid = function() {
+        if (randi(4) == 1)
+            return config.range[0] + randi(config.range[1] - config.range[0]);
+        else
+            return randi(config.range[1]);
+    }
+
     // AST constructor, accepts array of children and operation
     var AST = function(children, op) {
         if (!(this instanceof AST))
@@ -92,7 +99,7 @@
         var selfPriority = this.priority;
         return this.children.map(function(sub) {
             return sub.priority >= selfPriority? addParens(sub): sub;
-        }).join(this.op);
+        }).join(' ' + this.op + ' ');
     };
 
     // calculate (numeric) value
@@ -104,7 +111,7 @@
     // recursively generate a random AST with value val
     var gen = function(val, depth) {
         if (typeof val == 'undefined')
-            val = randi(16);
+            val = getValid();
         if (typeof depth == 'undefined')
             depth = config.depth;
 
@@ -115,7 +122,7 @@
         var left = null;
         var right = null;
         if (op !== '*') {
-            right = randi(16);
+            right = getValid();
         } else {
             if (isPrime(val))
                 return gen(val, depth);
@@ -124,17 +131,14 @@
             }, 1);
         }
 
-        left = eval(val + config.inverse[op] + right);
+        left = eval(val + ' ' + config.inverse[op] + ' ' + right);
 
         // an ugly fix for / 0
-        if (!isValid(left) || !isValid(right) || eval(left + op + right) !== val)
+        if (!isValid(left) || !isValid(right) || eval(left + ' ' + op + ' ' + right) !== val)
             return gen(val, depth);
 
         var children = [gen(left, randi(depth)), gen(right, randi(depth))];
-        var res = AST(children, op);
-        if(res.value() !== val)
-            console.log(res, left, op, right)
-        return res;
+        return AST(children, op);
     };
 
     gen.eqn = function() {

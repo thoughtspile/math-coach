@@ -2,10 +2,28 @@ body, .container.page {
   height: 100%;
 }
 
-.container.page {
+.page {
     padding-top: 60px;
 }
 
 .result {
   height: 100%;
+}
+
+
+.form-large{
+    font-size: 32px;
+}
+
+.form-large .control-label{
+    padding-top: 20px;
+    padding-bottom: 20px;
+    line-height: normal;
+}
+
+.form-large input, .form-large  button{
+    font-size: 32px;
+    padding: 20px;
+    height: auto;
+    line-height: normal;
 }

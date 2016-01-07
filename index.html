@@ -7,47 +7,92 @@
 
     <link rel="stylesheet" href="index.css" media="screen" >
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" media="screen" >
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css">
 </head>
 
-<body>
-  <div class='container page'>
-    <div class='row'>
-      <form class='form-horizontal col-sm-6' action="javascript:void(0);">
-        <div class='form-group row'>
-          <label class='col-sm-4 control-label' for='depth'>Max depth</label>
-          <div class='col-sm-8'>
-            <input class='form-control' id='depth' value='2' type='number' min='0'>
-            </input>
-          </div>
-        </div>
+<body class='container'>
+    <nav>
+        <ul class='nav lead nav-pills nav-justified'>
+            <li><a href="#" id='tab-worksheet'>Generate a worksheet</a></li>
+            <li><a href="#" id='tab-game'>Test your math skills</a></li>
+        </ul>
+    </nav>
 
-        <div class='form-group row'>
-          <label class='col-sm-4 control-label' for='mode'>Mode</label>
-          <div class='col-sm-8'>
-            <select class='form-control' id='mode'>
-                <option value='expr' selected>Expression</option>
-                <option value='eqn'>Equation</option>
-            </select>
-          </div>
-        </div>
+    <div class='page worksheet'>
+        <div class='row'>
+            <form class='form-horizontal col-sm-6' action="javascript:void(0);">
+                <div class='form-group row'>
+                    <label class='col-sm-4 control-label' for='depth'>Max depth</label>
+                    <div class='col-sm-8'>
+                        <input class='form-control' id='depth' value='2' type='number' min='0'>
+                        </input>
+                    </div>
+                </div>
 
-        <div class='form-group row'>
-          <div class='col-sm-offset-4 col-sm-8'>
-            <button type='submit' class='btn btn-secondary' id='run'>run</button>
-          </div>
-        </div>
-      </form>
+                <div class='form-group row'>
+                    <label class='col-sm-4 control-label' for='mode'>Mode</label>
+                    <div class='col-sm-8'>
+                        <select class='form-control' id='mode'>
+                            <option value='expr' selected>Expression</option>
+                            <option value='eqn'>Equation</option>
+                        </select>
+                    </div>
+                </div>
 
-      <div class='col-sm-6'>
-        <textarea class='result form-control' id='res' rows = '30'>
-        </textarea>
-      </div>
+                <div class='form-group row'>
+                    <label class='col-sm-4 control-label' for='ans'>Show answers</label>
+                    <div class='col-sm-8 checkbox'>
+                        <label>
+                            <input type='checkbox' id='ans' checked>
+                            </input>
+                        </label>
+                    </div>
+                </div>
+
+                <div class='form-group row'>
+                    <div class='col-sm-offset-4 col-sm-8'>
+                        <button type='submit' class='btn btn-secondary' id='run'>
+                            run
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <div class='col-sm-6'>
+                <textarea class='result form-control' id='res' rows = '30'>
+                </textarea>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <script src = 'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.1/lodash.js'></script>
-  <script src = 'expr-generator.js'></script>
-  <script src = 'index.js'></script>
+    <div class='row page game'>
+        <div class='col-sm-8 col-sm-offset-2 form-large'>
+            <form class='row form' action="javascript:void(0);" id='game-ui'>
+                <div class='form-group row' id='game-group'>
+                    <label class='col-sm-9 control-label' for='game-ans'>
+                        <span id='game-problem'></span>
+                    </label>
+                    <div class='col-sm-3'>
+                        <input class='form-control' id='game-ans'></input>
+                    </div>
+                </div>
+            </form>
+
+            <div class='row error' id='game-fail'>
+                You lose =(
+            </div>
+
+            <div class='row' id='game-win'>
+                You win =)
+            </div>
+        </div>
+    </div>
+
+    <script src = 'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.1/lodash.js'></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.js"></script>
+
+    <script src = 'expr-generator.js'></script>
+    <script src = 'index.js'></script>
 </body>
 
 </html>

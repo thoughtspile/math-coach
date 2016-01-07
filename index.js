@@ -6,7 +6,7 @@
 
     var getStr = function(mode) {
         if (mode == 'expr') {
-            var rande = gen();
+            var rande = gen.to();
             return rande + ' | ' + rande.value();
         }
         var rande = gen.eqn();

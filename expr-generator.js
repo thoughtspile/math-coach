@@ -28,13 +28,24 @@
     // returns the array of prime factors of val (in ascending order)
     // at each iteration adds the smallest factor not less than restr
     // works for negative numbers
-    var factorize = function(val, restr) {
-        if (val < 0)
+    var factorize = function(val) {
+        if (val < 0) {
             return [-1].concat(factorize(-val));
-        for (var i = restr || 2; i <= Math.sqrt(val); i++)
-            if (divides(i, val) && isPrime(i))
-                return [i].concat(factorize(val / i, i));
-        return [val];
+        }
+        var res = [];
+        var max = Math.sqrt(val);
+        for (var i = 2; i <= max; i++) {
+          if (isPrime(i)) {
+          console.log(val, i)
+            while (divides(i, val)) {
+              res.push(i);
+              val = Math.round(val / i);
+            }
+          }
+        }
+        if (res.length == 0)
+          res = [val];
+        return res;
     };
 
     // returns a random subset
@@ -103,18 +114,28 @@
 
     // generate a random AST with value val
     gen.to = function(val) {
-        var op = config.ops[randi(config.ops.length)];
+        val = val || randi(16);
+        var op = config.ops[randi(config.ops.length + 1)];
         var children = null;
-        if (op !== '*') {
+        // fff()
+        if (!op) {
+            op = '';
+            children = val;
+        } else if (op !== '*') {
             var left = gen(0);
-            children = [gen.to(eval(val + config.inverse[op] + left)), left];
+            var target = eval(val + config.inverse[op] + left);
+            if (Math.abs(target) > 500)
+                return gen.to(val);
+            children = [gen.to(target), left];
         } else {
+            if (isPrime(val)) {
+                return gen.to(val);
+            }
             var factors = factorize(val);
             var left = rSubset(factors).reduce(function(acc, val) {
               return acc * val;
             }, 1);
             children = [gen.to(left), Math.floor(val / left)];
-
         }
         return AST(children, op);
     };
@@ -141,6 +162,7 @@
             }
         };
     });
+
 
     // runtime-agnostic export
     if (typeof module !== 'undefined' && module.exports)

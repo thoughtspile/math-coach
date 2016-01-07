@@ -113,30 +113,31 @@
     };
 
     // generate a random AST with value val
-    gen.to = function(val) {
-        val = val || randi(16);
-        var op = config.ops[randi(config.ops.length + 1)];
-        var children = null;
-        // fff()
-        if (!op) {
-            op = '';
-            children = val;
-        } else if (op !== '*') {
-            var left = gen(0);
-            var target = eval(val + config.inverse[op] + left);
-            if (Math.abs(target) > 500)
-                return gen.to(val);
-            children = [gen.to(target), left];
+    gen.to = function(val, depth) {
+        if (typeof val == 'undefined')
+            val = randi(16);
+        if (typeof depth == 'undefined')
+            depth = config.depth;
+
+        if (depth == 0)
+            return AST(randi(16), '');
+        var op = config.ops[randi(config.ops.length)];
+        var left = null;
+        var right = null;
+        if (op !== '*') {
+            left = gen(0);
+            right = eval(val + config.inverse[op] + left);
         } else {
-            if (isPrime(val)) {
-                return gen.to(val);
-            }
-            var factors = factorize(val);
-            var left = rSubset(factors).reduce(function(acc, val) {
+            if (isPrime(val))
+                return gen.to(val, depth);
+            left = rSubset(factorize(val)).reduce(function(acc, val) {
               return acc * val;
             }, 1);
-            children = [gen.to(left), Math.floor(val / left)];
+            right = Math.floor(val / left);
         }
+        if (Math.abs(left) > 500 || Math.abs(right) > 500)
+            return gen.to(val, depth);
+        children = [gen.to(left, randi(depth)), gen.to(right, randi(depth))];
         return AST(children, op);
     };
 

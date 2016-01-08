@@ -13,22 +13,26 @@
         }
     };
 
-    var getStr = function(mode, showAns) {
-        if (mode == 'expr') {
-            var rande = gen();
-            return rande + (showAns? ' | ' + rande.value(): '');
-        } else if (mode == 'eqn') {
-            var rande = gen.eqn();
-            return rande.eqn + (showAns? ' | ' + rande.ans: '');
+
+    var model = {
+        get: function(mode, showAns) {
+            if (mode == 'expr') {
+                var rande = gen();
+                return rande + (showAns? ' | ' + rande.value(): '');
+            } else if (mode == 'eqn') {
+                var rande = gen.eqn();
+                return rande.eqn + (showAns? ' | ' + rande.ans: '');
+            }
         }
     };
 
     var run = function() {
-        gen.depth(depth.value)
+        var dom = view.getDOM();
+        gen.depth(dom.depth.value)
             .range([-200, 200]);
         var problems = [];
         for (var i = 0; i < 30; i++)
-            problems.push(getStr(mode.value, ans.checked));
+            problems.push(model.get(dom.mode.value, dom.ans.checked));
         view.getDOM().out.innerHTML = problems.join('\n');
     };
 

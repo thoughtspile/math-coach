@@ -13,8 +13,8 @@
 <body class='container'>
     <nav>
         <ul class='nav lead nav-pills nav-justified'>
-            <li><a href="#" id='tab-worksheet'>Generate a worksheet</a></li>
-            <li><a href="#" id='tab-game'>Test your math skills</a></li>
+            <li><a href="#" id='tab-game'>Practice</a></li>
+            <li><a href="#" id='tab-worksheet'>Worksheets</a></li>
         </ul>
     </nav>
 
@@ -67,19 +67,39 @@
 
     <div class='row page game'>
         <div class='col-sm-8 col-sm-offset-2 form-large'>
-            <form class='row form' action="javascript:void(0);" id='game-ui'>
+            <div class='row form' action="javascript:void(0);" id='game-ui'>
                 <div class="progress">
-                    <div class="progress-bar" style="width: 0;" id='game-progress'></div>
+                    <div class="progress-bar" style="width: 0;" id='game-progress'>
+                    </div>
                 </div>
+
                 <div class='form-group row' id='game-group'>
                     <label class='col-sm-9 control-label' for='game-ans'>
                         <span id='game-problem'></span>
                     </label>
                     <div class='col-sm-3'>
-                        <input class='form-control' id='game-ans'></input>
+                        <input class='form-control' autocomplete="off" id='game-ans'>
+                        </input>
                     </div>
                 </div>
-            </form>
+
+                <div class='row error' id='game-error'>
+                    <div class='col-xs-8 control-label'>
+                        Nope, the answer was <span id='game-correct-ans'></span>.
+                    </div>
+                    <div class='col-xs-4'>
+                        <button class='btn btn-default btn-block' id='game-accept'>
+                            Ah, yes!
+                        </button>
+                    </div>
+                </div>
+
+                <div class='row error' id='game-hint'>
+                    <div class='col-xs-12'>
+                        Almost got it! An extra attempt is on the house.
+                    </div>
+                </div>
+            </div>
 
             <div class='row text-center' id='game-over'>
                 <div class='row error' id='game-fail'>
@@ -89,7 +109,8 @@
                     You win =)
                 </div>
                 <div class='row'>
-                    <button class="btn glyphicon glyphicon-repeat" aria-hidden="true" id='game-repeat'></button>
+                    <button class="btn btn-success glyphicon glyphicon-repeat" id='game-repeat'>
+                    </button>
                 </div>
             </div>
         </div>

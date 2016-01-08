@@ -62,11 +62,15 @@
     var groupView = document.getElementById('game-group');
     var progressBar = document.getElementById('game-progress');
     var repeatBtn = document.getElementById('game-repeat');
+    var acceptBtn = document.getElementById('game-accept');
+    var correctAns = document.getElementById('game-correct-ans');
     var problem = null;
 
     var screens = {
         game: document.getElementById('game-ui'),
         win: document.getElementById('game-win'),
+        error: document.getElementById('game-error'),
+        almost: document.getElementById('game-hint'),
         fail: document.getElementById('game-fail'),
         over: document.getElementById('game-over')
     };
@@ -74,6 +78,7 @@
     var invalid = ' has-error';
     var valid = ' has-success';
     var flashDuration = 1000;
+    var errPenalty = 5;
 
     var lesson = {};
 
@@ -95,29 +100,35 @@
     }
 
     function run() {
+        setTimeout(function() { ansView.focus(); }, 0);
+        console.log(ansView)
+        showScreens(['game']);
+        ansView.disabled = false;
         problem = mkProblem();
         katex.render(problem.problem.toString() + '=', problemView);
         ansView.value = '';
-        console.log(problem.ans)
+        console.log('The answer is ' + problem.ans);
     }
 
     function test() {
-        console.log(lesson)
         if (parseFloat(ansView.value) == problem.ans) {
             flashValidity('valid');
             lesson.done++;
             lesson.todo--;
-            progressBar.style.width = 100 * lesson.done / (lesson.done + lesson.todo)+ '%';
-            if (lesson.todo == 0)
+            if (lesson.todo == 0) {
                 setTimeout(showScreens.bind(null, ['over', 'win']), flashDuration);
-            else
+            } else {
                 run();
+            }
         } else {
             flashValidity('invalid');
-            lesson.hearts--;
-            if (lesson.hearts < 0)
-                showScreens(['over', 'fail']);
+            lesson.todo += errPenalty;
+            showScreens(['game', 'error']);
+            correctAns.innerHTML = problem.ans;
+            ansView.disabled = true;
+            acceptBtn.focus();
         }
+        progressBar.style.width = 100 * lesson.done / (lesson.done + lesson.todo)+ '%';
     }
 
 
@@ -143,4 +154,5 @@
     play();
     ansView.onchange = test;
     repeatBtn.onclick = play;
+    acceptBtn.onclick = run;
 }())

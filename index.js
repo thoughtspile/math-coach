@@ -101,11 +101,11 @@
 
     function run() {
         setTimeout(function() { ansView.focus(); }, 0);
-        console.log(ansView)
         showScreens(['game']);
         ansView.disabled = false;
         problem = mkProblem();
-        katex.render(problem.problem.toString() + '=', problemView);
+        // katex.render(problem.problem.toString() + '=', problemView);
+        problemView.innerHTML = problem.problem.toString() + ' =';
         ansView.value = '';
         console.log('The answer is ' + problem.ans);
     }
@@ -117,6 +117,7 @@
             lesson.todo--;
             if (lesson.todo == 0) {
                 setTimeout(showScreens.bind(null, ['over', 'win']), flashDuration);
+                setTimeout(function() { repeatBtn.focus(); }, flashDuration);
             } else {
                 run();
             }

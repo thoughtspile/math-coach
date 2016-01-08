@@ -27,3 +27,12 @@ body, .container.page {
     height: auto;
     line-height: normal;
 }
+
+.game input[type='number'] {
+    -moz-appearance:textfield;
+}
+
+.game input::-webkit-outer-spin-button,
+.game input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}

@@ -1,3 +1,4 @@
+// worksheets
 (function() {
     var depth = document.getElementById('depth');
     var mode = document.getElementById('mode');
@@ -31,42 +32,62 @@
     run();
 }());
 
+// tab MVC
 (function() {
     var tabGameCtrl = document.getElementById('tab-game');
     var tabGame = document.getElementsByClassName('game')[0];
     var tabWorksheetCtrl = document.getElementById('tab-worksheet');
     var tabWorksheet = document.getElementsByClassName('worksheet')[0];
 
-    tabGameCtrl.onclick = function() {
+    function showGame() {
         tabWorksheet.style.display = 'none';
         tabGame.style.display = 'inherit';
     }
-    tabWorksheetCtrl.onclick = function() {
+
+    function showWorksheets() {
         tabWorksheet.style.display = 'inherit';
         tabGame.style.display = 'none';
     }
+
+    tabGameCtrl.onclick = showGame;
+    tabWorksheetCtrl.onclick = showWorksheets;
+
+    showGame();
 }());
 
+// game MVC
 (function() {
     var problemView = document.getElementById('game-problem');
     var ansView = document.getElementById('game-ans');
     var groupView = document.getElementById('game-group');
+    var progressBar = document.getElementById('game-progress');
+    var repeatBtn = document.getElementById('game-repeat');
     var problem = null;
 
-    var gameScreenView = document.getElementById('game-ui');
-    var winScreenView = document.getElementById('game-win');
-    var failScreenView = document.getElementById('game-fail');
+    var screens = {
+        game: document.getElementById('game-ui'),
+        win: document.getElementById('game-win'),
+        fail: document.getElementById('game-fail'),
+        over: document.getElementById('game-over')
+    };
 
     var invalid = ' has-error';
     var valid = ' has-success';
     var flashDuration = 1000;
 
-    var lesson = {
-        done: 0,
-        todo: 3,
-        hearts: 3
-    };
+    var lesson = {};
 
+
+    function play() {
+        showScreens(['game']);
+        progressBar.style.width = '0';
+        lesson = {
+            done: 0,
+            todo: 3,
+            hearts: 3
+        };
+        run();
+    }
 
     function mkProblem() {
         var rande = gen();
@@ -83,17 +104,19 @@
     function test() {
         console.log(lesson)
         if (parseFloat(ansView.value) == problem.ans) {
-            run();
             flashValidity('valid');
             lesson.done++;
             lesson.todo--;
+            progressBar.style.width = 100 * lesson.done / (lesson.done + lesson.todo)+ '%';
             if (lesson.todo == 0)
-                win();
+                setTimeout(showScreens.bind(null, ['over', 'win']), flashDuration);
+            else
+                run();
         } else {
             flashValidity('invalid');
             lesson.hearts--;
             if (lesson.hearts < 0)
-                fail();
+                showScreens(['over', 'fail']);
         }
     }
 
@@ -111,26 +134,13 @@
     }
 
 
-    function fail() {
-        gameScreenView.style.display = 'none';
-        winScreenView.style.display = 'none';
-        failScreenView.style.display = 'inherit';
-    }
-
-    function win() {
-        gameScreenView.style.display = 'none';
-        winScreenView.style.display = 'inherit';
-        failScreenView.style.display = 'none';
-    }
-
-    function play() {
-        gameScreenView.style.display = 'inherit';
-        winScreenView.style.display = 'none';
-        failScreenView.style.display = 'none';
+    function showScreens(keys) {
+        for (var key in screens)
+            screens[key].style.display = (keys.indexOf(key) == -1? 'none': 'inherit');
     }
 
 
     play();
-    run();
     ansView.onchange = test;
+    repeatBtn.onclick = play;
 }())

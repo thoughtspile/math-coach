@@ -174,38 +174,41 @@
         };
     }());
 
+    var control = (function() {
+        var dom = view.getDOM();
 
-    function play() {
-        model.reset();
-        view.showScreens(['game']);
-        view.setProgress(0);
-        run();
-    }
-
-    function run() {
-        var problem = model.nextProblem();
-        console.log('The answer is ' + problem.ans);
-    }
-
-    function test() {
-        if (model.check(view.getAns())) {
-            view.flashValidity('valid');
-            model.next();
-            if (model.isOver()) {
-                view.win();
-            } else {
-                run();
-            }
-        } else {
-            model.penalize();
-            view.error(model.getProblem());
+        function play() {
+            model.reset();
+            view.showScreens(['game']);
+            view.setProgress(0);
+            run();
         }
-        view.setProgress(model.progress());
-    }
 
+        function run() {
+            var problem = model.nextProblem();
+            console.log('The answer is ' + problem.ans);
+        }
 
-    play();
-    view.getDOM().ans.onchange = test;
-    view.getDOM().repeatBtn.onclick = play;
-    view.getDOM().acceptBtn.onclick = run;
+        function test() {
+            if (model.check(view.getAns())) {
+                view.flashValidity('valid');
+                model.next();
+                if (model.isOver()) {
+                    view.win();
+                } else {
+                    run();
+                }
+            } else {
+                model.penalize();
+                view.error(model.getProblem());
+            }
+            view.setProgress(model.progress());
+        }
+
+        dom.ans.onchange = test;
+        dom.repeatBtn.onclick = play;
+        dom.acceptBtn.onclick = run;
+
+        play();
+    }());
 }())

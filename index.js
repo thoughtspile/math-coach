@@ -57,103 +57,155 @@
 
 // game MVC
 (function() {
-    var problemView = document.getElementById('game-problem');
-    var ansView = document.getElementById('game-ans');
-    var groupView = document.getElementById('game-group');
-    var progressBar = document.getElementById('game-progress');
-    var repeatBtn = document.getElementById('game-repeat');
-    var acceptBtn = document.getElementById('game-accept');
-    var correctAns = document.getElementById('game-correct-ans');
-    var problem = null;
+    var view = (function() {
+        var invalid = ' has-error';
+        var valid = ' has-success';
+        var flashDuration = 1000;
 
-    var screens = {
-        game: document.getElementById('game-ui'),
-        win: document.getElementById('game-win'),
-        error: document.getElementById('game-error'),
-        almost: document.getElementById('game-hint'),
-        fail: document.getElementById('game-fail'),
-        over: document.getElementById('game-over')
-    };
+        var dom = {
+            screens: {
+                game: document.getElementById('game-ui'),
+                win: document.getElementById('game-win'),
+                error: document.getElementById('game-error'),
+                almost: document.getElementById('game-hint'),
+                fail: document.getElementById('game-fail'),
+                over: document.getElementById('game-over')
+            },
 
-    var invalid = ' has-error';
-    var valid = ' has-success';
-    var flashDuration = 1000;
-    var errPenalty = 5;
+            progressBar: document.getElementById('game-progress'),
+            problem: document.getElementById('game-problem'),
+            ans: document.getElementById('game-ans'),
+            group: document.getElementById('game-group'),
+            correctAns: document.getElementById('game-correct-ans'),
 
-    var lesson = {};
+            repeatBtn: document.getElementById('game-repeat'),
+            acceptBtn: document.getElementById('game-accept')
+        };
+
+        return {
+            showScreens: function(keys) {
+                for (var key in dom.screens) {
+                    dom.screens[key].style.display = (keys.indexOf(key) == -1? 'none': 'inherit');
+                }
+            },
+            flashValidity: function(state) {
+                if (!state) {
+                    dom.group.className = dom.group.className.replace(invalid, '').replace(valid, '');
+                    return;
+                }
+                if (state == 'valid' && dom.group.className.indexOf(valid) == -1)
+                    dom.group.className = dom.group.className.replace(invalid, '') + valid;
+                else if (state == 'invalid' && dom.group.className.indexOf(invalid) == -1)
+                    dom.group.className = dom.group.className.replace(valid, '') + invalid;
+                window.setTimeout(view.flashValidity.bind(null, ''), flashDuration);
+            },
+            setProgress: function(percent) {
+                dom.progressBar.style.width = percent + '%';
+            },
+            showProblem: function(problem) {
+                setTimeout(function() { dom.ans.focus(); }, 0);
+                view.showScreens(['game']);
+                dom.ans.disabled = false;
+                // katex.render(problem.problem.toString() + '=', problemView);
+                dom.problem.innerHTML = problem.problem.toString() + ' =';
+                dom.ans.value = '';
+            },
+            win: function() {
+                setTimeout(view.showScreens.bind(null, ['over', 'win']), flashDuration);
+                setTimeout(function() { dom.repeatBtn.focus(); }, flashDuration);
+            },
+            error: function(problem) {
+                view.flashValidity('invalid');
+                view.showScreens(['game', 'error']);
+                dom.correctAns.innerHTML = problem.ans;
+                dom.ans.disabled = true;
+                dom.acceptBtn.focus();
+            },
+            getAns: function() {
+                return parseFloat(dom.ans.value);
+            },
+            getDOM: function() {
+                return dom;
+            }
+        }
+    }());
+
+    var model = (function() {
+        var errPenalty = 5;
+        var problem = null;
+        var lesson = {};
+
+        function mkProblem() {
+            var rande = gen();
+            return {problem: rande, ans: rande.value()};
+        }
+
+        return {
+            reset: function() {
+                lesson = {
+                    done: 0,
+                    todo: 3
+                };
+            },
+            check: function(ans) {
+                return ans == problem.ans;
+            },
+            next: function() {
+                lesson.done++;
+                lesson.todo--;
+            },
+            isOver: function() {
+                return lesson.todo == 0;
+            },
+            penalize: function() {
+                lesson.todo += errPenalty;
+            },
+            nextProblem: function() {
+                problem = mkProblem();
+                view.showProblem(problem);
+                return problem;
+            },
+            progress: function() {
+                return 100 * lesson.done / (lesson.done + lesson.todo);
+            },
+            getProblem: function() {
+                return problem;
+            }
+        };
+    }());
 
 
     function play() {
-        showScreens(['game']);
-        progressBar.style.width = '0';
-        lesson = {
-            done: 0,
-            todo: 3,
-            hearts: 3
-        };
+        model.reset();
+        view.showScreens(['game']);
+        view.setProgress(0);
         run();
     }
 
-    function mkProblem() {
-        var rande = gen();
-        return {problem: rande, ans: rande.value()};
-    }
-
     function run() {
-        setTimeout(function() { ansView.focus(); }, 0);
-        showScreens(['game']);
-        ansView.disabled = false;
-        problem = mkProblem();
-        // katex.render(problem.problem.toString() + '=', problemView);
-        problemView.innerHTML = problem.problem.toString() + ' =';
-        ansView.value = '';
+        var problem = model.nextProblem();
         console.log('The answer is ' + problem.ans);
     }
 
     function test() {
-        if (parseFloat(ansView.value) == problem.ans) {
-            flashValidity('valid');
-            lesson.done++;
-            lesson.todo--;
-            if (lesson.todo == 0) {
-                setTimeout(showScreens.bind(null, ['over', 'win']), flashDuration);
-                setTimeout(function() { repeatBtn.focus(); }, flashDuration);
+        if (model.check(view.getAns())) {
+            view.flashValidity('valid');
+            model.next();
+            if (model.isOver()) {
+                view.win();
             } else {
                 run();
             }
         } else {
-            flashValidity('invalid');
-            lesson.todo += errPenalty;
-            showScreens(['game', 'error']);
-            correctAns.innerHTML = problem.ans;
-            ansView.disabled = true;
-            acceptBtn.focus();
+            model.penalize();
+            view.error(model.getProblem());
         }
-        progressBar.style.width = 100 * lesson.done / (lesson.done + lesson.todo)+ '%';
-    }
-
-
-    function flashValidity(state) {
-        if (!state) {
-            groupView.className = groupView.className.replace(invalid, '').replace(valid, '');
-            return;
-        }
-        if (state == 'valid' && groupView.className.indexOf(valid) == -1)
-            groupView.className = groupView.className.replace(invalid, '') + valid;
-        else if (state == 'invalid' && groupView.className.indexOf(invalid) == -1)
-            groupView.className = groupView.className.replace(valid, '') + invalid;
-        window.setTimeout(flashValidity.bind(null, ''), flashDuration);
-    }
-
-
-    function showScreens(keys) {
-        for (var key in screens)
-            screens[key].style.display = (keys.indexOf(key) == -1? 'none': 'inherit');
+        view.setProgress(model.progress());
     }
 
 
     play();
-    ansView.onchange = test;
-    repeatBtn.onclick = play;
-    acceptBtn.onclick = run;
+    view.getDOM().ans.onchange = test;
+    view.getDOM().repeatBtn.onclick = play;
+    view.getDOM().acceptBtn.onclick = run;
 }())

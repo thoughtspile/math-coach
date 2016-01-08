@@ -1,10 +1,17 @@
 // worksheets
 (function() {
-    var depth = document.getElementById('depth');
-    var mode = document.getElementById('mode');
-    var runBtn = document.getElementById('run');
-    var ans = document.getElementById('ans');
-    var out = document.getElementById('res');
+    var view = {
+        dom: {
+            depth: document.getElementById('depth'),
+            mode: document.getElementById('mode'),
+            runBtn: document.getElementById('run'),
+            ans: document.getElementById('ans'),
+            out: document.getElementById('res')
+        },
+        getDOM: function() {
+            return this.dom;
+        }
+    };
 
     var getStr = function(mode, showAns) {
         if (mode == 'expr') {
@@ -19,40 +26,45 @@
     var run = function() {
         gen.depth(depth.value)
             .range([-200, 200]);
-        res.innerHTML = [1,2,3,4,5,6]
-            .map(getStr.bind(null, mode.value, ans.checked))
-            .join('\n');
+        var problems = [];
+        for (var i = 0; i < 30; i++)
+            problems.push(getStr(mode.value, ans.checked));
+        view.getDOM().out.innerHTML = problems.join('\n');
     };
 
-    runBtn.onclick = run;
-    mode.onchange = run;
-    depth.onchange = run;
-    ans.onchange = run;
-
+    view.getDOM().runBtn.onclick = run;
+    view.getDOM().mode.onchange = run;
+    view.getDOM().depth.onchange = run;
+    view.getDOM().ans.onchange = run;
     run();
 }());
 
 // tab MVC
 (function() {
-    var tabGameCtrl = document.getElementById('tab-game');
-    var tabGame = document.getElementsByClassName('game')[0];
-    var tabWorksheetCtrl = document.getElementById('tab-worksheet');
-    var tabWorksheet = document.getElementsByClassName('worksheet')[0];
+    var view = {
+        dom: {
+            screens: {
+                game: document.getElementsByClassName('game')[0],
+                worksheet: document.getElementsByClassName('worksheet')[0]
+            },
+            gameLink: document.getElementById('tab-game'),
+            worksheetLink: document.getElementById('tab-worksheet')
+        },
+        getDOM: function() {
+            return this.dom;
+        },
+        screen: function(keys) {
+            for (var key in this.dom.screens)
+                this.dom.screens[key].style.display = (keys.indexOf(key) == -1? 'none': 'inherit');
+        }
+    };
 
-    function showGame() {
-        tabWorksheet.style.display = 'none';
-        tabGame.style.display = 'inherit';
-    }
-
-    function showWorksheets() {
-        tabWorksheet.style.display = 'inherit';
-        tabGame.style.display = 'none';
-    }
-
-    tabGameCtrl.onclick = showGame;
-    tabWorksheetCtrl.onclick = showWorksheets;
-
-    showGame();
+    var control = (function() {
+        var dom = view.getDOM();
+        dom.gameLink.onclick = view.screen.bind(view, ['game']);
+        dom.worksheetLink.onclick = view.screen.bind(view, ['worksheet']);
+        view.screen(['game']);
+    }());
 }());
 
 // game MVC
@@ -175,8 +187,6 @@
     }());
 
     var control = (function() {
-        var dom = view.getDOM();
-
         function play() {
             model.reset();
             view.showScreens(['game']);
@@ -189,10 +199,10 @@
             console.log('The answer is ' + problem.ans);
         }
 
-        function test() {
+        function check() {
+            model.next();
             if (model.check(view.getAns())) {
                 view.flashValidity('valid');
-                model.next();
                 if (model.isOver()) {
                     view.win();
                 } else {
@@ -205,7 +215,8 @@
             view.setProgress(model.progress());
         }
 
-        dom.ans.onchange = test;
+        var dom = view.getDOM();
+        dom.ans.onchange = check;
         dom.repeatBtn.onclick = play;
         dom.acceptBtn.onclick = run;
 

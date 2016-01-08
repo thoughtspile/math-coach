@@ -1,5 +1,8 @@
+@import url(https://fonts.googleapis.com/css?family=PT+Serif);
+
 body, .container.page {
-  height: 100%;
+    font-family: 'PT Serif', serif !important;
+    height: 100%;
 }
 
 .page {
@@ -19,6 +22,10 @@ body, .container.page {
     padding-top: 20px;
     padding-bottom: 20px;
     line-height: normal;
+}
+
+textarea {
+    font-family: monospace !important;
 }
 
 .form-large input, .form-large  button{
